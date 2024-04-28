@@ -2,12 +2,7 @@ package com.example.acefc
 
 object MovieList {
     val MOVIE_CATEGORY = arrayOf(
-        "Category Zero",
-        "Category One",
-        "Category Two",
-        "Category Three",
-        "Category Four",
-        "Category Five"
+        "Live FC"
     )
 
     val list: List<Movie> by lazy {

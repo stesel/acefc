@@ -1,12 +1,10 @@
 package com.example.acefc
 
-import android.graphics.drawable.Drawable
-import androidx.leanback.widget.ImageCardView
-import androidx.leanback.widget.Presenter
-import androidx.core.content.ContextCompat
 import android.util.Log
 import android.view.ViewGroup
-
+import androidx.core.content.ContextCompat
+import androidx.leanback.widget.ImageCardView
+import androidx.leanback.widget.Presenter
 import com.bumptech.glide.Glide
 import kotlin.properties.Delegates
 
@@ -15,7 +13,6 @@ import kotlin.properties.Delegates
  * It contains an ImageCardView.
  */
 class CardPresenter : Presenter() {
-    private var mDefaultCardImage: Drawable? = null
     private var sSelectedBackgroundColor: Int by Delegates.notNull()
     private var sDefaultBackgroundColor: Int by Delegates.notNull()
 
@@ -25,7 +22,6 @@ class CardPresenter : Presenter() {
         sDefaultBackgroundColor = ContextCompat.getColor(parent.context, R.color.default_background)
         sSelectedBackgroundColor =
             ContextCompat.getColor(parent.context, R.color.selected_background)
-        mDefaultCardImage = ContextCompat.getDrawable(parent.context, R.drawable.movie)
 
         val cardView = object : ImageCardView(parent.context) {
             override fun setSelected(selected: Boolean) {
@@ -50,9 +46,8 @@ class CardPresenter : Presenter() {
             cardView.contentText = movie.studio
             cardView.setMainImageDimensions(CARD_WIDTH, CARD_HEIGHT)
             Glide.with(viewHolder.view.context)
-                .load(movie.cardImageUrl)
+                .load(R.drawable.card)
                 .centerCrop()
-                .error(mDefaultCardImage)
                 .into(cardView.mainImageView)
         }
     }

@@ -85,7 +85,9 @@ class MainFragment : BrowseSupportFragment() {
     private fun loadRows() {
         val list = MovieList.list
 
-        val rowsAdapter = ArrayObjectAdapter(ListRowPresenter())
+        val listPresenter = ListRowPresenter()
+
+        val rowsAdapter = ArrayObjectAdapter(listPresenter)
         val cardPresenter = CardPresenter()
 
         for (i in 0 until NUM_ROWS) {
@@ -171,7 +173,6 @@ class MainFragment : BrowseSupportFragment() {
     companion object {
         private val TAG = "MainFragment"
 
-        private val BACKGROUND_UPDATE_DELAY = 300
         private val GRID_ITEM_WIDTH = 200
         private val GRID_ITEM_HEIGHT = 200
         private val NUM_ROWS = 1

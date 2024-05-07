@@ -57,7 +57,7 @@ class MainFragment : BrowseSupportFragment() {
         val width = mMetrics.widthPixels
         val height = mMetrics.heightPixels
         Glide.with(context!!)
-            .load(R.drawable.background)
+            .load(R.drawable.bg)
             .centerCrop()
             .into<SimpleTarget<Drawable>>(
                 object : SimpleTarget<Drawable>(width, height) {

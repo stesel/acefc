@@ -12,6 +12,5 @@ class DetailsDescriptionPresenter : AbstractDetailsDescriptionPresenter() {
 
         viewHolder.title.text = movie.title
         viewHolder.subtitle.text = movie.studio
-        viewHolder.body.text = movie.description
     }
 }

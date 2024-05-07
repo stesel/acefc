@@ -26,6 +26,7 @@ import androidx.core.app.ActivityOptionsCompat
 import androidx.core.content.ContextCompat
 import android.util.Log
 import android.widget.Toast
+import androidx.fragment.app.ListFragment
 
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.SimpleTarget
@@ -57,9 +58,8 @@ class VideoDetailsFragment : DetailsSupportFragment() {
             mAdapter = ArrayObjectAdapter(mPresenterSelector)
             setupDetailsOverviewRow()
             setupDetailsOverviewRowPresenter()
-            setupRelatedMovieListRow()
             adapter = mAdapter
-            initializeBackground(mSelectedMovie)
+            initializeBackground()
             onItemViewClickedListener = ItemViewClickedListener()
         } else {
             val intent = Intent(context!!, MainActivity::class.java)
@@ -67,13 +67,12 @@ class VideoDetailsFragment : DetailsSupportFragment() {
         }
     }
 
-    private fun initializeBackground(movie: Movie?) {
+    private fun initializeBackground() {
         mDetailsBackground.enableParallax()
         Glide.with(context!!)
             .asBitmap()
             .centerCrop()
-            .error(R.drawable.background)
-            .load(movie?.backgroundImageUrl)
+            .load(R.drawable.bg)
             .into<SimpleTarget<Bitmap>>(object : SimpleTarget<Bitmap>() {
                 override fun onResourceReady(
                     bitmap: Bitmap,
@@ -88,13 +87,12 @@ class VideoDetailsFragment : DetailsSupportFragment() {
     private fun setupDetailsOverviewRow() {
         Log.d(TAG, "doInBackground: " + mSelectedMovie?.toString())
         val row = DetailsOverviewRow(mSelectedMovie)
-        row.imageDrawable = ContextCompat.getDrawable(context!!, R.drawable.background)
+        row.imageDrawable = ContextCompat.getDrawable(context!!, R.drawable.bg)
         val width = convertDpToPixel(context!!, DETAIL_THUMB_WIDTH)
         val height = convertDpToPixel(context!!, DETAIL_THUMB_HEIGHT)
         Glide.with(context!!)
-            .load(mSelectedMovie?.cardImageUrl)
+            .load(R.drawable.card)
             .centerCrop()
-            .error(R.drawable.background)
             .into<SimpleTarget<Drawable>>(object : SimpleTarget<Drawable>(width, height) {
                 override fun onResourceReady(
                     drawable: Drawable,
@@ -107,6 +105,28 @@ class VideoDetailsFragment : DetailsSupportFragment() {
             })
 
         val actionAdapter = ArrayObjectAdapter()
+
+        actionAdapter.add(
+            Action(
+                ACTION_WATCH_TRAILER,
+                resources.getString(R.string.watch_trailer_1),
+                resources.getString(R.string.watch_trailer_2)
+            )
+        )
+        actionAdapter.add(
+            Action(
+                ACTION_RENT,
+                resources.getString(R.string.rent_1),
+                resources.getString(R.string.rent_2)
+            )
+        )
+        actionAdapter.add(
+            Action(
+                ACTION_BUY,
+                resources.getString(R.string.buy_1),
+                resources.getString(R.string.buy_2)
+            )
+        )
 
         actionAdapter.add(
             Action(
@@ -158,21 +178,6 @@ class VideoDetailsFragment : DetailsSupportFragment() {
             }
         }
         mPresenterSelector.addClassPresenter(DetailsOverviewRow::class.java, detailsPresenter)
-    }
-
-    private fun setupRelatedMovieListRow() {
-        val subcategories = arrayOf(getString(R.string.related_movies))
-        val list = MovieList.list
-
-        Collections.shuffle(list)
-        val listRowAdapter = ArrayObjectAdapter(CardPresenter())
-        for (j in 0 until NUM_COLS) {
-            listRowAdapter.add(list[j % 5])
-        }
-
-        val header = HeaderItem(0, subcategories[0])
-        mAdapter.add(ListRow(header, listRowAdapter))
-        mPresenterSelector.addClassPresenter(ListRow::class.java, ListRowPresenter())
     }
 
     private fun convertDpToPixel(context: Context, dp: Int): Int {

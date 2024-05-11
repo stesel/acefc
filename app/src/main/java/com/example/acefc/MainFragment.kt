@@ -83,23 +83,17 @@ class MainFragment : BrowseSupportFragment() {
     }
 
     private fun loadRows() {
-        val list = MovieList.list
-
         val listPresenter = ListRowPresenter()
 
         val rowsAdapter = ArrayObjectAdapter(listPresenter)
         val cardPresenter = CardPresenter()
 
-        for (i in 0 until NUM_ROWS) {
-            val listRowAdapter = ArrayObjectAdapter(cardPresenter)
-            for (j in 0 until NUM_COLS) {
-                listRowAdapter.add(list[j % 5])
-            }
-            val header = HeaderItem(i.toLong(), MovieList.MOVIE_CATEGORY[i])
-            rowsAdapter.add(ListRow(header, listRowAdapter))
-        }
+        val listRowAdapter = ArrayObjectAdapter(cardPresenter)
 
-        val gridHeader = HeaderItem(NUM_ROWS.toLong(), getString(R.string.preferences))
+        val header = HeaderItem(0.toLong(), "Live FC")
+        rowsAdapter.add(ListRow(header, listRowAdapter))
+
+        val gridHeader = HeaderItem(1.toLong(), getString(R.string.preferences))
 
         val mGridPresenter = GridItemPresenter()
         val gridRowAdapter = ArrayObjectAdapter(mGridPresenter)
@@ -109,6 +103,14 @@ class MainFragment : BrowseSupportFragment() {
         rowsAdapter.add(ListRow(gridHeader, gridRowAdapter))
 
         adapter = rowsAdapter
+
+        DataProvider.getLiveFC { liveFCs ->
+            Log.i(TAG, liveFCs.toString())
+
+            for (item in liveFCs) {
+                listRowAdapter.add(item)
+            }
+        }
     }
 
     private fun setupEventListeners() {
@@ -175,7 +177,5 @@ class MainFragment : BrowseSupportFragment() {
 
         private val GRID_ITEM_WIDTH = 200
         private val GRID_ITEM_HEIGHT = 200
-        private val NUM_ROWS = 1
-        private val NUM_COLS = 15
     }
 }

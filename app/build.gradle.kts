@@ -39,4 +39,6 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.leanback)
     implementation(libs.glide)
+    implementation(libs.retrofit)
+    implementation(libs.convertermoshi)
 }

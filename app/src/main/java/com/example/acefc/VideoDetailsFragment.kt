@@ -146,10 +146,10 @@ class VideoDetailsFragment : DetailsSupportFragment() {
         detailsPresenter.isParticipatingEntranceTransition = true
 
         detailsPresenter.onActionClickedListener = OnActionClickedListener { action ->
-            val streamAction = action as StreamAction;
+            val streamAction = action as StreamAction
             val intent = Intent("org.acestream.action.start_content")
             intent.setData(Uri.parse("acestream:?content_id=${streamAction.contentId}"))
-            intent.putExtra("org.acestream.EXTRA_SELECTED_PLAYER", "{\"type\": 3}");
+            intent.putExtra("org.acestream.EXTRA_SELECTED_PLAYER", "{\"type\": 3}")
             startActivity(intent)
         }
         mPresenterSelector.addClassPresenter(DetailsOverviewRow::class.java, detailsPresenter)

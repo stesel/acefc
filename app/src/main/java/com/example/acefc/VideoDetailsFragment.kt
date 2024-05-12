@@ -3,11 +3,14 @@ package com.example.acefc
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
-import android.os.Bundle
 import android.graphics.drawable.Drawable
+import android.net.Uri
+import android.os.Bundle
+import android.util.Log
+import androidx.core.app.ActivityOptionsCompat
+import androidx.core.content.ContextCompat
 import androidx.leanback.app.DetailsSupportFragment
 import androidx.leanback.app.DetailsSupportFragmentBackgroundController
-import androidx.leanback.widget.Action
 import androidx.leanback.widget.ArrayObjectAdapter
 import androidx.leanback.widget.ClassPresenterSelector
 import androidx.leanback.widget.DetailsOverviewRow
@@ -19,14 +22,10 @@ import androidx.leanback.widget.OnItemViewClickedListener
 import androidx.leanback.widget.Presenter
 import androidx.leanback.widget.Row
 import androidx.leanback.widget.RowPresenter
-import androidx.core.app.ActivityOptionsCompat
-import androidx.core.content.ContextCompat
-import android.util.Log
-import android.widget.Toast
-
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.SimpleTarget
 import com.bumptech.glide.request.transition.Transition
+
 
 /**
  * A wrapper fragment for leanback details screens.
@@ -108,24 +107,19 @@ class VideoDetailsFragment : DetailsSupportFragment() {
                 .add(R.id.details_fragment, mLoadingFragment)
                 .commit()
 
-            DataProvider.getLiveFCStreams(mSelectedLiveFC!!.id) {
+            DataProvider.getLiveFCStreams(mSelectedLiveFC!!.id) { liveFCStreams ->
 
                 val actionAdapter = ArrayObjectAdapter()
 
-                actionAdapter.add(
-                    Action(
-                        ACTION_WATCH_TRAILER,
-                        resources.getString(R.string.watch_trailer_1),
-                        resources.getString(R.string.watch_trailer_2)
+                for (item in liveFCStreams) {
+                    actionAdapter.add(
+                        StreamAction(
+                            item.id,
+                            "${item.quality} KB/s",
+                            "Language: ${item.language}"
+                        )
                     )
-                )
-                actionAdapter.add(
-                    Action(
-                        ACTION_RENT,
-                        resources.getString(R.string.rent_1),
-                        resources.getString(R.string.rent_2)
-                    )
-                )
+                }
 
                 activity!!.supportFragmentManager
                     .beginTransaction()
@@ -152,13 +146,11 @@ class VideoDetailsFragment : DetailsSupportFragment() {
         detailsPresenter.isParticipatingEntranceTransition = true
 
         detailsPresenter.onActionClickedListener = OnActionClickedListener { action ->
-            if (action.id == ACTION_WATCH_TRAILER) {
-                val intent = Intent(context!!, PlaybackActivity::class.java)
-                intent.putExtra(DetailsActivity.LIVE_FC, mSelectedLiveFC)
-                startActivity(intent)
-            } else {
-                Toast.makeText(context!!, action.toString(), Toast.LENGTH_SHORT).show()
-            }
+            val streamAction = action as StreamAction;
+            val intent = Intent("org.acestream.action.start_content")
+            intent.setData(Uri.parse("acestream:?content_id=${streamAction.contentId}"))
+            intent.putExtra("org.acestream.EXTRA_SELECTED_PLAYER", "{\"type\": 3}");
+            startActivity(intent)
         }
         mPresenterSelector.addClassPresenter(DetailsOverviewRow::class.java, detailsPresenter)
     }
@@ -195,13 +187,7 @@ class VideoDetailsFragment : DetailsSupportFragment() {
     companion object {
         private val TAG = "VideoDetailsFragment"
 
-        private val ACTION_WATCH_TRAILER = 1L
-        private val ACTION_RENT = 2L
-        private val ACTION_BUY = 3L
-
         private val DETAIL_THUMB_WIDTH = 274
         private val DETAIL_THUMB_HEIGHT = 274
-
-        private val NUM_COLS = 10
     }
 }

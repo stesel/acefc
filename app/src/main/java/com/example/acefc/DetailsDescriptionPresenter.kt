@@ -11,6 +11,6 @@ class DetailsDescriptionPresenter : AbstractDetailsDescriptionPresenter() {
         val movie = item as LiveFC
 
         viewHolder.title.text = movie.title
-        viewHolder.subtitle.text = movie.time
+        viewHolder.subtitle.text = convertUtcToLocalTime(movie.time)
     }
 }

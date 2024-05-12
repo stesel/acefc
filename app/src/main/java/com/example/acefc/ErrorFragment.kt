@@ -14,6 +14,8 @@ class ErrorFragment : ErrorSupportFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         title = resources.getString(R.string.app_name)
+
+        setErrorContent()
     }
 
     internal fun setErrorContent() {

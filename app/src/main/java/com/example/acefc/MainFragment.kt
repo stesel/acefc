@@ -112,8 +112,6 @@ class MainFragment : BrowseSupportFragment() {
         rowsAdapter.add(ListRow(gridHeader, gridRowAdapter))
 
         DataProvider.getLiveFC { liveFCs ->
-            Log.i(TAG, liveFCs.toString())
-
             for (item in liveFCs) {
                 listRowAdapter.add(item)
             }

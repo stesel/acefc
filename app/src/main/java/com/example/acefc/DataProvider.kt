@@ -9,6 +9,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.http.GET
 import retrofit2.http.Path
+import java.io.Serializable
 import java.util.concurrent.TimeUnit
 
 object DataProvider {
@@ -64,7 +65,19 @@ object DataProvider {
 
 }
 
-data class LiveFC(val id: String, val title: String, val time: String)
+data class LiveFC(val id: String, val title: String, val time: String): Serializable {
+    override fun toString(): String {
+        return "LiveFC{" +
+                "id=" + id +
+                ", title='" + title + '\'' +
+                ", time='" + time + '\'' +
+                '}'
+    }
+
+    companion object {
+        internal const val serialVersionUID = 727566175075960653L
+    }
+}
 
 data class LiveFCStream(val id: String, val quality: String, val language: String)
 

@@ -13,10 +13,7 @@ import androidx.leanback.widget.ClassPresenterSelector
 import androidx.leanback.widget.DetailsOverviewRow
 import androidx.leanback.widget.FullWidthDetailsOverviewRowPresenter
 import androidx.leanback.widget.FullWidthDetailsOverviewSharedElementHelper
-import androidx.leanback.widget.HeaderItem
 import androidx.leanback.widget.ImageCardView
-import androidx.leanback.widget.ListRow
-import androidx.leanback.widget.ListRowPresenter
 import androidx.leanback.widget.OnActionClickedListener
 import androidx.leanback.widget.OnItemViewClickedListener
 import androidx.leanback.widget.Presenter
@@ -26,13 +23,10 @@ import androidx.core.app.ActivityOptionsCompat
 import androidx.core.content.ContextCompat
 import android.util.Log
 import android.widget.Toast
-import androidx.fragment.app.ListFragment
 
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.SimpleTarget
 import com.bumptech.glide.request.transition.Transition
-
-import java.util.Collections
 
 /**
  * A wrapper fragment for leanback details screens.
@@ -40,7 +34,7 @@ import java.util.Collections
  */
 class VideoDetailsFragment : DetailsSupportFragment() {
 
-    private var mSelectedMovie: Movie? = null
+    private var mSelectedLiveFC: LiveFC? = null
 
     private lateinit var mDetailsBackground: DetailsSupportFragmentBackgroundController
     private lateinit var mPresenterSelector: ClassPresenterSelector
@@ -52,8 +46,8 @@ class VideoDetailsFragment : DetailsSupportFragment() {
 
         mDetailsBackground = DetailsSupportFragmentBackgroundController(this)
 
-        mSelectedMovie = activity!!.intent.getSerializableExtra(DetailsActivity.MOVIE) as Movie
-        if (mSelectedMovie != null) {
+        mSelectedLiveFC = activity!!.intent.getSerializableExtra(DetailsActivity.LIVE_FC) as LiveFC
+        if (mSelectedLiveFC != null) {
             mPresenterSelector = ClassPresenterSelector()
             mAdapter = ArrayObjectAdapter(mPresenterSelector)
             setupDetailsOverviewRow()
@@ -85,8 +79,8 @@ class VideoDetailsFragment : DetailsSupportFragment() {
     }
 
     private fun setupDetailsOverviewRow() {
-        Log.d(TAG, "doInBackground: " + mSelectedMovie?.toString())
-        val row = DetailsOverviewRow(mSelectedMovie)
+        Log.d(TAG, "doInBackground: " + mSelectedLiveFC?.toString())
+        val row = DetailsOverviewRow(mSelectedLiveFC)
         row.imageDrawable = ContextCompat.getDrawable(context!!, R.drawable.bg)
         val width = convertDpToPixel(context!!, DETAIL_THUMB_WIDTH)
         val height = convertDpToPixel(context!!, DETAIL_THUMB_HEIGHT)
@@ -104,54 +98,43 @@ class VideoDetailsFragment : DetailsSupportFragment() {
                 }
             })
 
-        val actionAdapter = ArrayObjectAdapter()
-
-        actionAdapter.add(
-            Action(
-                ACTION_WATCH_TRAILER,
-                resources.getString(R.string.watch_trailer_1),
-                resources.getString(R.string.watch_trailer_2)
-            )
-        )
-        actionAdapter.add(
-            Action(
-                ACTION_RENT,
-                resources.getString(R.string.rent_1),
-                resources.getString(R.string.rent_2)
-            )
-        )
-        actionAdapter.add(
-            Action(
-                ACTION_BUY,
-                resources.getString(R.string.buy_1),
-                resources.getString(R.string.buy_2)
-            )
-        )
-
-        actionAdapter.add(
-            Action(
-                ACTION_WATCH_TRAILER,
-                resources.getString(R.string.watch_trailer_1),
-                resources.getString(R.string.watch_trailer_2)
-            )
-        )
-        actionAdapter.add(
-            Action(
-                ACTION_RENT,
-                resources.getString(R.string.rent_1),
-                resources.getString(R.string.rent_2)
-            )
-        )
-        actionAdapter.add(
-            Action(
-                ACTION_BUY,
-                resources.getString(R.string.buy_1),
-                resources.getString(R.string.buy_2)
-            )
-        )
-        row.actionsAdapter = actionAdapter
-
         mAdapter.add(row)
+
+        if (mSelectedLiveFC != null) {
+            val mLoadingFragment = LoadingFragment()
+
+            activity!!.supportFragmentManager
+                .beginTransaction()
+                .add(R.id.details_fragment, mLoadingFragment)
+                .commit()
+
+            DataProvider.getLiveFCStreams(mSelectedLiveFC!!.id) {
+
+                val actionAdapter = ArrayObjectAdapter()
+
+                actionAdapter.add(
+                    Action(
+                        ACTION_WATCH_TRAILER,
+                        resources.getString(R.string.watch_trailer_1),
+                        resources.getString(R.string.watch_trailer_2)
+                    )
+                )
+                actionAdapter.add(
+                    Action(
+                        ACTION_RENT,
+                        resources.getString(R.string.rent_1),
+                        resources.getString(R.string.rent_2)
+                    )
+                )
+
+                activity!!.supportFragmentManager
+                    .beginTransaction()
+                    .remove(mLoadingFragment)
+                    .commit()
+
+                row.actionsAdapter = actionAdapter
+            }
+        }
     }
 
     private fun setupDetailsOverviewRowPresenter() {
@@ -171,7 +154,7 @@ class VideoDetailsFragment : DetailsSupportFragment() {
         detailsPresenter.onActionClickedListener = OnActionClickedListener { action ->
             if (action.id == ACTION_WATCH_TRAILER) {
                 val intent = Intent(context!!, PlaybackActivity::class.java)
-                intent.putExtra(DetailsActivity.MOVIE, mSelectedMovie)
+                intent.putExtra(DetailsActivity.LIVE_FC, mSelectedLiveFC)
                 startActivity(intent)
             } else {
                 Toast.makeText(context!!, action.toString(), Toast.LENGTH_SHORT).show()
@@ -192,10 +175,10 @@ class VideoDetailsFragment : DetailsSupportFragment() {
             rowViewHolder: RowPresenter.ViewHolder,
             row: Row
         ) {
-            if (item is Movie) {
+            if (item is LiveFC) {
                 Log.d(TAG, "Item: " + item.toString())
                 val intent = Intent(context!!, DetailsActivity::class.java)
-                intent.putExtra(resources.getString(R.string.movie), mSelectedMovie)
+                intent.putExtra(resources.getString(R.string.live_fc), mSelectedLiveFC)
 
                 val bundle =
                     ActivityOptionsCompat.makeSceneTransitionAnimation(

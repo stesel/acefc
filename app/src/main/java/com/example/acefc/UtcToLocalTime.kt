@@ -1,6 +1,5 @@
 package com.example.acefc
 
-import android.util.Log
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.TimeZone
@@ -13,7 +12,6 @@ fun convertUtcToLocalTime(utcTime: String): String {
     val outputFormat = SimpleDateFormat("HH:mm")
     outputFormat.timeZone = TimeZone.getDefault() // Use local timezone
 
-    Log.d("convertUtcToLocalTime::timeZone", outputFormat.timeZone.toString())
     // Parse UTC time string into a Date object
     val utcDate: Date = inputFormat.parse(utcTime) ?: return ""
 

@@ -37,13 +37,13 @@ class CardPresenter : Presenter() {
     }
 
     override fun onBindViewHolder(viewHolder: Presenter.ViewHolder, item: Any) {
-        val movie = item as LiveFC
+        val liveFC = item as LiveFC
         val cardView = viewHolder.view as ImageCardView
 
         Log.d(TAG, "onBindViewHolder")
 
-        cardView.titleText = movie.title
-        cardView.contentText = convertUtcToLocalTime(movie.time)
+        cardView.titleText = liveFC.title
+        cardView.contentText = convertUtcToLocalTime(liveFC.time)
         cardView.setMainImageDimensions(CARD_WIDTH, CARD_HEIGHT)
         Glide.with(viewHolder.view.context)
             .load(R.drawable.card)

@@ -35,6 +35,8 @@ class MainFragment : BrowseSupportFragment() {
     private lateinit var mBackgroundManager: BackgroundManager
     private lateinit var mMetrics: DisplayMetrics
 
+    private var loadingData = false
+
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         Log.i(TAG, "onCreate")
         super.onActivityCreated(savedInstanceState)
@@ -83,6 +85,15 @@ class MainFragment : BrowseSupportFragment() {
     }
 
     private fun loadRows() {
+        loadingData = true
+        view?.isFocusable = false
+
+        val mLoadingFragment = LoadingFragment()
+        activity!!.supportFragmentManager
+            .beginTransaction()
+            .add(R.id.main_browse_fragment, mLoadingFragment)
+            .commit()
+
         val listPresenter = ListRowPresenter()
 
         val rowsAdapter = ArrayObjectAdapter(listPresenter)
@@ -97,12 +108,8 @@ class MainFragment : BrowseSupportFragment() {
 
         val mGridPresenter = GridItemPresenter()
         val gridRowAdapter = ArrayObjectAdapter(mGridPresenter)
-        gridRowAdapter.add(getString(R.string.grid_view))
-        gridRowAdapter.add(getString(R.string.error_fragment))
         gridRowAdapter.add(getString(R.string.personal_settings))
         rowsAdapter.add(ListRow(gridHeader, gridRowAdapter))
-
-        adapter = rowsAdapter
 
         DataProvider.getLiveFC { liveFCs ->
             Log.i(TAG, liveFCs.toString())
@@ -110,6 +117,16 @@ class MainFragment : BrowseSupportFragment() {
             for (item in liveFCs) {
                 listRowAdapter.add(item)
             }
+
+            adapter = rowsAdapter
+
+            activity!!.supportFragmentManager
+                .beginTransaction()
+                .remove(mLoadingFragment)
+                .commit()
+
+            loadingData = false
+            view?.isFocusable = true
         }
     }
 
@@ -130,10 +147,10 @@ class MainFragment : BrowseSupportFragment() {
             row: Row
         ) {
 
-            if (item is Movie) {
+            if (item is LiveFC) {
                 Log.d(TAG, "Item: " + item.toString())
                 val intent = Intent(context!!, DetailsActivity::class.java)
-                intent.putExtra(DetailsActivity.MOVIE, item)
+                intent.putExtra(DetailsActivity.LIVE_FC, item)
 
                 val bundle = ActivityOptionsCompat.makeSceneTransitionAnimation(
                     activity!!,
@@ -143,12 +160,7 @@ class MainFragment : BrowseSupportFragment() {
                     .toBundle()
                 startActivity(intent, bundle)
             } else if (item is String) {
-                if (item.contains(getString(R.string.error_fragment))) {
-                    val intent = Intent(context!!, BrowseErrorActivity::class.java)
-                    startActivity(intent)
-                } else {
-                    Toast.makeText(context!!, item, Toast.LENGTH_SHORT).show()
-                }
+                Toast.makeText(context!!, item, Toast.LENGTH_SHORT).show()
             }
         }
     }

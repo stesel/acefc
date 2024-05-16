@@ -20,7 +20,7 @@ object DataProvider {
         .build()
 
     val service = Retrofit.Builder()
-        .baseUrl("https://acefc-api.fly.dev/")
+        .baseUrl("https://acefc-api-s.onrender.com/")
         .client(okHttpClient)
         .addConverterFactory(MoshiConverterFactory.create())
         .build()

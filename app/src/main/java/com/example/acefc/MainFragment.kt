@@ -2,7 +2,6 @@ package com.example.acefc
 
 import android.content.Intent
 import android.graphics.Color
-import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.util.DisplayMetrics
 import android.util.Log
@@ -23,9 +22,6 @@ import androidx.leanback.widget.OnItemViewClickedListener
 import androidx.leanback.widget.Presenter
 import androidx.leanback.widget.Row
 import androidx.leanback.widget.RowPresenter
-import com.bumptech.glide.Glide
-import com.bumptech.glide.request.target.SimpleTarget
-import com.bumptech.glide.request.transition.Transition
 
 /**
  * Loads a grid of cards with movies to browse.
@@ -41,8 +37,6 @@ class MainFragment : BrowseSupportFragment() {
         Log.i(TAG, "onCreate")
         super.onActivityCreated(savedInstanceState)
 
-        prepareBackgroundManager()
-
         setupUIElements()
 
         loadRows()
@@ -50,30 +44,7 @@ class MainFragment : BrowseSupportFragment() {
         setupEventListeners()
     }
 
-    private fun prepareBackgroundManager() {
-        mBackgroundManager = BackgroundManager.getInstance(activity)
-        mBackgroundManager.attach(activity!!.window)
-        mMetrics = DisplayMetrics()
-        activity!!.windowManager.defaultDisplay.getMetrics(mMetrics)
-
-        val width = mMetrics.widthPixels
-        val height = mMetrics.heightPixels
-        Glide.with(context!!)
-            .load(R.drawable.bg)
-            .centerCrop()
-            .into<SimpleTarget<Drawable>>(
-                object : SimpleTarget<Drawable>(width, height) {
-                    override fun onResourceReady(
-                        drawable: Drawable,
-                        transition: Transition<in Drawable>?
-                    ) {
-                        mBackgroundManager.drawable = drawable
-                    }
-                })
-    }
-
     private fun setupUIElements() {
-        title = getString(R.string.browse_title)
         // over title
         headersState = BrowseSupportFragment.HEADERS_ENABLED
         isHeadersTransitionOnBackEnabled = true
@@ -129,11 +100,6 @@ class MainFragment : BrowseSupportFragment() {
     }
 
     private fun setupEventListeners() {
-        setOnSearchClickedListener {
-            Toast.makeText(context!!, "Implement your own in-app search", Toast.LENGTH_LONG)
-                .show()
-        }
-
         onItemViewClickedListener = ItemViewClickedListener()
     }
 

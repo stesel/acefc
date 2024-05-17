@@ -2,7 +2,6 @@ package com.example.acefc
 
 import android.content.Context
 import android.content.Intent
-import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Bundle
@@ -10,7 +9,6 @@ import android.util.Log
 import androidx.core.app.ActivityOptionsCompat
 import androidx.core.content.ContextCompat
 import androidx.leanback.app.DetailsSupportFragment
-import androidx.leanback.app.DetailsSupportFragmentBackgroundController
 import androidx.leanback.widget.ArrayObjectAdapter
 import androidx.leanback.widget.ClassPresenterSelector
 import androidx.leanback.widget.DetailsOverviewRow
@@ -35,15 +33,12 @@ class VideoDetailsFragment : DetailsSupportFragment() {
 
     private var mSelectedLiveFC: LiveFC? = null
 
-    private lateinit var mDetailsBackground: DetailsSupportFragmentBackgroundController
     private lateinit var mPresenterSelector: ClassPresenterSelector
     private lateinit var mAdapter: ArrayObjectAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         Log.d(TAG, "onCreate DetailsFragment")
         super.onCreate(savedInstanceState)
-
-        mDetailsBackground = DetailsSupportFragmentBackgroundController(this)
 
         mSelectedLiveFC = activity!!.intent.getSerializableExtra(DetailsActivity.LIVE_FC) as LiveFC
         if (mSelectedLiveFC != null) {
@@ -52,29 +47,11 @@ class VideoDetailsFragment : DetailsSupportFragment() {
             setupDetailsOverviewRow()
             setupDetailsOverviewRowPresenter()
             adapter = mAdapter
-            initializeBackground()
             onItemViewClickedListener = ItemViewClickedListener()
         } else {
             val intent = Intent(context!!, MainActivity::class.java)
             startActivity(intent)
         }
-    }
-
-    private fun initializeBackground() {
-        mDetailsBackground.enableParallax()
-        Glide.with(context!!)
-            .asBitmap()
-            .centerCrop()
-            .load(R.drawable.bg)
-            .into<SimpleTarget<Bitmap>>(object : SimpleTarget<Bitmap>() {
-                override fun onResourceReady(
-                    bitmap: Bitmap,
-                    transition: Transition<in Bitmap>?
-                ) {
-                    mDetailsBackground.coverBitmap = bitmap
-                    mAdapter.notifyArrayItemRangeChanged(0, mAdapter.size())
-                }
-            })
     }
 
     private fun setupDetailsOverviewRow() {
@@ -121,12 +98,14 @@ class VideoDetailsFragment : DetailsSupportFragment() {
                     )
                 }
 
-                activity!!.supportFragmentManager
-                    .beginTransaction()
-                    .remove(mLoadingFragment)
-                    .commit()
+                if (activity != null && row != null) {
+                    activity!!.supportFragmentManager
+                        .beginTransaction()
+                        .remove(mLoadingFragment)
+                        .commit()
 
-                row.actionsAdapter = actionAdapter
+                    row.actionsAdapter = actionAdapter
+                }
             }
         }
     }

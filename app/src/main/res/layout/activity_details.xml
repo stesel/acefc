@@ -4,5 +4,19 @@
     android:id="@+id/details_fragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/bg"
     tools:context=".DetailsActivity"
-    tools:deviceIds="tv" />
+    tools:deviceIds="tv">
+
+    <TextClock
+        android:id="@+id/textClock"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:layout_margin="20sp"
+        android:format12Hour="hh:mm"
+        android:format24Hour="HH:mm"
+        android:textColor="@color/background_gradient_end"
+        android:textSize="30sp" />
+
+</FrameLayout>
